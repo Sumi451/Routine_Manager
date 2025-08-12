@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Routine Manager</string>
+    <string name="enter_your_routine">Enter Your Routine</string>
+    <string name="enter_subject_e_g_math">Enter Subject (e.g., Math)</string>
+    <string name="enter_time_e_g_10_00_am">Enter Time (e.g., 10:00 AM)</string>
+    <string name="save_routine">Save Routine</string>
+    <string name="next_class">Next Class</string>
+    <string name="_10_00_am">10:00 AM</string>
+    <string name="math">Math</string>
+</resources>
