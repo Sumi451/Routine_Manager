@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permission for showing notifications on modern Android versions -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <application
@@ -14,23 +15,36 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Routines"
         tools:targetApi="31">
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name=".RoutineWidgetProvider" android:exported="false">
+
+        <activity
+            android:name=".HomeScreenActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".RoutineEntryActivity"
+            android:exported="false" />
+
+        <!-- The receiver for our App Widget -->
+        <receiver android:name=".RoutineWidgetProvider"
+            android:exported="false"
+            tools:ignore="MissingClass">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
+            <!-- This meta-data tag links our provider to the widget's metadata file -->
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/routine_widget_info" />
         </receiver>
-    </application>
 
+    </application>
 </manifest>

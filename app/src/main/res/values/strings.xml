@@ -7,4 +7,6 @@
     <string name="next_class">Next Class</string>
     <string name="_10_00_am">10:00 AM</string>
     <string name="math">Math</string>
+    <string name="app_icon">App Icon</string>
+    <string name="select_time">Select Time</string>
 </resources>
