@@ -2,20 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permission for showing notifications on modern Android versions -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- Permissions: In the future, you might need internet permission for API calls -->
+    <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
 
     <application
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Routines"
-        tools:targetApi="31">
+        android:theme="@style/Theme.Routines">
 
+        <!-- Declaring the main activity of the app. -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -25,26 +23,25 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".HomeScreenActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".RoutineEntryActivity"
-            android:exported="false" />
-
-        <!-- The receiver for our App Widget -->
-        <receiver android:name=".RoutineWidgetProvider"
-            android:exported="false"
-            tools:ignore="MissingClass">
+        <!-- Declaring the Timetable App Widget Provider.
+             This will handle the widget's lifecycle events. -->
+        <receiver android:name=".TimetableWidgetProvider"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <!-- This meta-data tag links our provider to the widget's metadata file -->
+            <!-- Meta-data to link to the widget's layout and settings -->
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/routine_widget_info" />
+                android:resource="@xml/timetable_widget_info" />
         </receiver>
+
+        <!-- Declaring the RemoteViewsService for the App Widget.
+             This will be used by the widget to display a list view. -->
+        <service
+            android:name=".TimetableWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" />
 
     </application>
 </manifest>
