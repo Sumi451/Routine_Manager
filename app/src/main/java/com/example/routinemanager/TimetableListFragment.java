@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,7 +20,7 @@ import com.example.routinemanager.TimetableRepository;
 /**
  * Fragment to display the list of timetable entries.
  */
-public class TimetableListFragment extends Fragment {
+public class TimetableListFragment extends Fragment implements TimetableAdapter.OnItemClickListener{
 
     private TimetableViewModel timetableViewModel;
     private RecyclerView recyclerView;
@@ -38,7 +39,7 @@ public class TimetableListFragment extends Fragment {
 
         // Initialize RecyclerView and its adapter
         recyclerView = view.findViewById(R.id.timetable_recycler_view);
-        adapter = new TimetableAdapter();
+        adapter = new TimetableAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -52,5 +53,22 @@ public class TimetableListFragment extends Fragment {
             Log.d("TimetableListFragment", "Timetable entries received: " + entries.size());
             adapter.setTimetableEntries(entries);
         });
+    }
+
+    @Override
+    public void onItemClick(TimetableEntry entry) {
+        // Create a Bundle to pass the entry ID
+        Bundle bundle = new Bundle();
+        bundle.putInt("ENTRY_ID", entry.id);
+
+        // Create the fragment and set the arguments
+        AddEditTimetableFragment fragment = new AddEditTimetableFragment();
+        fragment.setArguments(bundle);
+
+        // Navigate to the edit screen
+        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.timetable_fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 }

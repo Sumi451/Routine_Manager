@@ -3,6 +3,7 @@ package com.example.routinemanager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +19,16 @@ import java.util.List;
 public class TimetableAdapter extends RecyclerView.Adapter<TimetableAdapter.TimetableViewHolder> {
 
     private List<TimetableEntry> timetableEntries = new ArrayList<>();
+    private OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onItemClick(TimetableEntry entry);
+    }
+
+    public TimetableAdapter(OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
 
     // This method is called to create new ViewHolders.
     @NonNull
@@ -68,6 +79,13 @@ public class TimetableAdapter extends RecyclerView.Adapter<TimetableAdapter.Time
             timeTextView = itemView.findViewById(R.id.time_text_view);
             roomNumberTextView = itemView.findViewById(R.id.room_number_text_view);
             professorTextView = itemView.findViewById(R.id.professor_text_view);
+
+            itemView.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (listener != null && position != RecyclerView.NO_POSITION) {
+                    listener.onItemClick(timetableEntries.get(position));
+                }
+            });
         }
     }
 }
