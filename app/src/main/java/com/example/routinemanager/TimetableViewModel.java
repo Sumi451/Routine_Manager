@@ -3,6 +3,7 @@ package com.example.routinemanager;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import java.util.List;
+import androidx.lifecycle.MutableLiveData;
 import com.example.routinemanager.TimetableEntry; // Replace with your package name
 import com.example.routinemanager.TimetableRepository; // Replace with your package name
 
@@ -30,6 +31,22 @@ public class TimetableViewModel extends ViewModel {
     public LiveData<List<TimetableEntry>> getEntriesByDayOrder(int dayOrder) {
         return repository.getEntriesByDayOrder(dayOrder);
     }
+
+    public LiveData<TimetableEntry> getEntryById(int id) {
+        return repository.getEntryById(id);
+    }
+    public void insert(TimetableEntry entry) {
+        repository.insert(entry);
+    }
+
+    public void update(TimetableEntry entry) {
+        repository.update(entry);
+    }
+
+    public void delete(TimetableEntry entry) {
+        repository.delete(entry);
+    }
+
     /**
      * Inserts a new TimetableEntry into the database via the repository.
      */

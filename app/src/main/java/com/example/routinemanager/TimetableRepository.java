@@ -34,8 +34,20 @@ public class TimetableRepository {
         return timetableDao.getEntriesByDayOrder(dayOrder);
     }
 
+    public LiveData<TimetableEntry> getEntryById(int id) {
+        return timetableDao.getEntryById(id);
+    }
+
     public void insert(TimetableEntry entry) {
         new insertAsyncTask(timetableDao).execute(entry);
+    }
+
+    public void update(TimetableEntry entry) {
+        new updateAsyncTask(timetableDao).execute(entry);
+    }
+
+    public void delete(TimetableEntry entry) {
+        new deleteAsyncTask(timetableDao).execute(entry);
     }
 
     private static class insertAsyncTask extends AsyncTask<TimetableEntry, Void, Void> {
@@ -51,5 +63,34 @@ public class TimetableRepository {
             return null;
         }
     }
+
+    private static class updateAsyncTask extends AsyncTask<TimetableEntry, Void, Void> {
+        private TimetableDao asyncTaskDao;
+
+        updateAsyncTask(TimetableDao dao) {
+            this.asyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final TimetableEntry... params) {
+            asyncTaskDao.update(params[0]);
+            return null;
+        }
+    }
+
+    private static class deleteAsyncTask extends AsyncTask<TimetableEntry, Void, Void> {
+        private TimetableDao asyncTaskDao;
+
+        deleteAsyncTask(TimetableDao dao) {
+            this.asyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final TimetableEntry... params) {
+            asyncTaskDao.delete(params[0]);
+            return null;
+        }
+    }
+
 }
 
