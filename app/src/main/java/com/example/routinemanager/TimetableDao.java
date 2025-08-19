@@ -28,6 +28,10 @@ public interface TimetableDao {
     @Query("SELECT * FROM timetable_entries WHERE id = :id")
     LiveData<TimetableEntry> getEntryById(int id);
 
+    // Synchronous queries for the widget
+    @Query("SELECT * FROM timetable_entries WHERE dayOfWeek = :day ORDER BY startTime ASC")
+    List<TimetableEntry> getEntriesByDaySync(String day);
+
     @Insert
     void insert(TimetableEntry entry);
 

@@ -40,7 +40,6 @@ public class AddEditTimetableFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_add_class, container, false);
     }
 
@@ -58,10 +57,9 @@ public class AddEditTimetableFragment extends Fragment {
         buttonSave = view.findViewById(R.id.button_save);
         buttonDelete = view.findViewById(R.id.button_delete);
 
-        // Get the ViewModel
         timetableViewModel = new ViewModelProvider(requireActivity()).get(TimetableViewModel.class);
 
-        // Set up the spinner with days of the week from the arrays.xml resource
+        // Set up the spinner
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 requireContext(), R.array.days_of_week, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -74,11 +72,10 @@ public class AddEditTimetableFragment extends Fragment {
         // Save Button Logic
         buttonSave.setOnClickListener(v -> saveTimetableEntry());
 
-        // Check for arguments to determine if we are editing an existing entry
+        // Check for arguments to determine if we are editing
         if (getArguments() != null) {
             entryId = getArguments().getInt("ENTRY_ID", -1);
             if (entryId != -1) {
-                // Fetch the existing entry and populate the fields
                 timetableViewModel.getEntryById(entryId).observe(getViewLifecycleOwner(), entry -> {
                     if (entry != null) {
                         populateFields(entry);
@@ -115,13 +112,11 @@ public class AddEditTimetableFragment extends Fragment {
         editTextRoomNumber.setText(entry.roomNumber);
         buttonStartTime.setText(entry.startTime);
         buttonEndTime.setText(entry.endTime);
-        // Find the correct position in the spinner for the day of the week
         ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spinnerDayOfWeek.getAdapter();
         if (adapter != null) {
             int spinnerPosition = adapter.getPosition(entry.dayOfWeek);
             spinnerDayOfWeek.setSelection(spinnerPosition);
         }
-        // This is a placeholder for dayOrder, which we will handle in a later sprint.
     }
 
     private void saveTimetableEntry() {
@@ -137,7 +132,7 @@ public class AddEditTimetableFragment extends Fragment {
             return;
         }
 
-        TimetableEntry entry = new TimetableEntry(subjectName, professor, roomNumber, startTime, endTime, dayOfWeek, 0); // dayOrder placeholder
+        TimetableEntry entry = new TimetableEntry(subjectName, professor, roomNumber, startTime, endTime, dayOfWeek, 0);
         if (entryId == -1) {
             timetableViewModel.insert(entry);
             Toast.makeText(requireContext(), "Entry added!", Toast.LENGTH_SHORT).show();
@@ -147,16 +142,23 @@ public class AddEditTimetableFragment extends Fragment {
             Toast.makeText(requireContext(), "Entry updated!", Toast.LENGTH_SHORT).show();
         }
 
+        // Trigger a widget update
+        WidgetUpdater.updateWidget(requireContext());
+
         // Return to the previous fragment
         requireActivity().getSupportFragmentManager().popBackStack();
     }
 
     private void deleteTimetableEntry() {
         if (entryId != -1) {
-            TimetableEntry entryToDelete = new TimetableEntry("", "", "", "", "", "", 0); // We only need the ID to delete
+            TimetableEntry entryToDelete = new TimetableEntry("", "", "", "", "", "", 0);
             entryToDelete.id = entryId;
             timetableViewModel.delete(entryToDelete);
             Toast.makeText(requireContext(), "Entry deleted!", Toast.LENGTH_SHORT).show();
+
+            // Trigger a widget update
+            WidgetUpdater.updateWidget(requireContext());
+
             requireActivity().getSupportFragmentManager().popBackStack();
         }
     }

@@ -38,6 +38,11 @@ public class TimetableRepository {
         return timetableDao.getEntryById(id);
     }
 
+    // Synchronous method for the widget
+    public List<TimetableEntry> getEntriesByDaySync(String day) {
+        return timetableDao.getEntriesByDaySync(day);
+    }
+
     public void insert(TimetableEntry entry) {
         new insertAsyncTask(timetableDao).execute(entry);
     }
