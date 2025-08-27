@@ -4,9 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,36 +17,40 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/subject_name_text_view"
+            android:id="@+id/text_view_subject_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             android:textSize="18sp"
-            tools:text="Data Structures" />
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            tools:text="Introduction to Psychology" />
 
         <TextView
-            android:id="@+id/time_text_view"
+            android:id="@+id/text_view_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
             android:layout_marginTop="4dp"
-            tools:text="09:00 AM - 10:00 AM" />
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            tools:text="9:00 AM - 10:00 AM" />
 
         <TextView
-            android:id="@+id/room_number_text_view"
+            android:id="@+id/text_view_professor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
             android:layout_marginTop="4dp"
-            tools:text="Room: C-201" />
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            tools:text="Dr. Evelyn Reed" />
 
         <TextView
-            android:id="@+id/professor_text_view"
+            android:id="@+id/text_view_room"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
             android:layout_marginTop="4dp"
-            tools:text="Prof: Jane Doe" />
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            tools:text="Room 205" />
 
     </LinearLayout>
 

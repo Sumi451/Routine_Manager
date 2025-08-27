@@ -3,7 +3,6 @@ package com.example.routinemanager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -75,10 +74,11 @@ public class TimetableAdapter extends RecyclerView.Adapter<TimetableAdapter.Time
 
         public TimetableViewHolder(@NonNull View itemView) {
             super(itemView);
-            subjectNameTextView = itemView.findViewById(R.id.subject_name_text_view);
-            timeTextView = itemView.findViewById(R.id.time_text_view);
-            roomNumberTextView = itemView.findViewById(R.id.room_number_text_view);
-            professorTextView = itemView.findViewById(R.id.professor_text_view);
+            // Correcting the resource IDs to match the timetable_entry_item.xml file
+            subjectNameTextView = itemView.findViewById(R.id.text_view_subject_name);
+            timeTextView = itemView.findViewById(R.id.text_view_time);
+            roomNumberTextView = itemView.findViewById(R.id.text_view_room);
+            professorTextView = itemView.findViewById(R.id.text_view_professor);
 
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
@@ -89,4 +89,3 @@ public class TimetableAdapter extends RecyclerView.Adapter<TimetableAdapter.Time
         }
     }
 }
-
