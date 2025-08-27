@@ -19,6 +19,8 @@ import com.example.routinemanager.TimetableViewModel;
 import com.example.routinemanager.TimetableViewModelFactory;
 import com.example.routinemanager.TimetableRepository;
 import com.google.android.material.tabs.TabLayout;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,6 +58,11 @@ public class TimetableListFragment extends Fragment implements TimetableAdapter.
         adapter = new TimetableAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        // Add a LayoutAnimationController to animate the RecyclerView
+        int resId = R.anim.layout_animation_fall_down;
+        LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getContext(), resId);
+        recyclerView.setLayoutAnimation(animation);
 
         // Get the ViewModel from the Activity's scope
         TimetableRepository repository = new TimetableRepository(requireActivity().getApplication());
