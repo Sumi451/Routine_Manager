@@ -8,7 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -26,7 +29,11 @@ public class AddEditTimetableFragment extends Fragment {
     private EditText editTextRoomNumber;
     private Button buttonStartTime;
     private Button buttonEndTime;
-    private Spinner spinnerDayOfWeek;
+    private Spinner spinnerDaySelection;
+    private RadioGroup radioGroupDayType;
+    private TextView textViewDayLabel;
+    private RadioButton radioButtonDay;
+    private RadioButton radioButtonDayOrder;
     private Button buttonSave;
     private Button buttonDelete;
 
@@ -40,6 +47,7 @@ public class AddEditTimetableFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_add_class, container, false);
     }
 
@@ -53,17 +61,35 @@ public class AddEditTimetableFragment extends Fragment {
         editTextRoomNumber = view.findViewById(R.id.edit_text_room_number);
         buttonStartTime = view.findViewById(R.id.button_start_time);
         buttonEndTime = view.findViewById(R.id.button_end_time);
-        spinnerDayOfWeek = view.findViewById(R.id.spinner_day_of_week);
+        spinnerDaySelection = view.findViewById(R.id.spinner_day_selection);
+        radioGroupDayType = view.findViewById(R.id.radio_group_day_type);
+        textViewDayLabel = view.findViewById(R.id.text_view_day_label);
+        radioButtonDay = view.findViewById(R.id.radio_button_day);
+        radioButtonDayOrder = view.findViewById(R.id.radio_button_day_order);
         buttonSave = view.findViewById(R.id.button_save);
         buttonDelete = view.findViewById(R.id.button_delete);
 
         timetableViewModel = new ViewModelProvider(requireActivity()).get(TimetableViewModel.class);
 
-        // Set up the spinner
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+        // Set up the initial spinner adapter for Day of Week
+        ArrayAdapter<CharSequence> dayOfWeekAdapter = ArrayAdapter.createFromResource(
                 requireContext(), R.array.days_of_week, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerDayOfWeek.setAdapter(adapter);
+        dayOfWeekAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerDaySelection.setAdapter(dayOfWeekAdapter);
+
+        // Add a listener to the radio group to switch the spinner content
+        radioGroupDayType.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.radio_button_day) {
+                textViewDayLabel.setText("Day of Week");
+                spinnerDaySelection.setAdapter(dayOfWeekAdapter);
+            } else if (checkedId == R.id.radio_button_day_order) {
+                textViewDayLabel.setText("Day Order");
+                ArrayAdapter<CharSequence> dayOrderAdapter = ArrayAdapter.createFromResource(
+                        requireContext(), R.array.day_orders, android.R.layout.simple_spinner_item);
+                dayOrderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerDaySelection.setAdapter(dayOrderAdapter);
+            }
+        });
 
         // Time Picker Logic
         buttonStartTime.setOnClickListener(v -> showTimePicker(true));
@@ -112,10 +138,25 @@ public class AddEditTimetableFragment extends Fragment {
         editTextRoomNumber.setText(entry.roomNumber);
         buttonStartTime.setText(entry.startTime);
         buttonEndTime.setText(entry.endTime);
-        ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spinnerDayOfWeek.getAdapter();
-        if (adapter != null) {
-            int spinnerPosition = adapter.getPosition(entry.dayOfWeek);
-            spinnerDayOfWeek.setSelection(spinnerPosition);
+
+        // Populate based on whether the entry has a day of week or day order
+        if (entry.dayOfWeek != null && !entry.dayOfWeek.isEmpty()) {
+            radioButtonDay.setChecked(true);
+            ArrayAdapter<CharSequence> adapter = (ArrayAdapter<CharSequence>) spinnerDaySelection.getAdapter();
+            if (adapter != null) {
+                int spinnerPosition = adapter.getPosition(entry.dayOfWeek);
+                spinnerDaySelection.setSelection(spinnerPosition);
+            }
+        } else {
+            radioButtonDayOrder.setChecked(true);
+            ArrayAdapter<CharSequence> dayOrderAdapter = ArrayAdapter.createFromResource(
+                    requireContext(), R.array.day_orders, android.R.layout.simple_spinner_item);
+            dayOrderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerDaySelection.setAdapter(dayOrderAdapter);
+            // Day order is an integer, so we need to find its string representation
+            String dayOrderString = "Day " + entry.dayOrder;
+            int spinnerPosition = dayOrderAdapter.getPosition(dayOrderString);
+            spinnerDaySelection.setSelection(spinnerPosition);
         }
     }
 
@@ -125,14 +166,24 @@ public class AddEditTimetableFragment extends Fragment {
         String roomNumber = editTextRoomNumber.getText().toString().trim();
         String startTime = buttonStartTime.getText().toString();
         String endTime = buttonEndTime.getText().toString();
-        String dayOfWeek = spinnerDayOfWeek.getSelectedItem().toString();
+
+        String dayOfWeek = null;
+        int dayOrder = 0;
+
+        if (radioButtonDay.isChecked()) {
+            dayOfWeek = spinnerDaySelection.getSelectedItem().toString();
+        } else {
+            String selectedDayOrderStr = spinnerDaySelection.getSelectedItem().toString();
+            // Extract the number from the string "Day X"
+            dayOrder = Integer.parseInt(selectedDayOrderStr.replace("Day ", ""));
+        }
 
         if (subjectName.isEmpty() || startTime.equals("Select Time") || endTime.equals("Select Time")) {
             Toast.makeText(requireContext(), "Please fill all required fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        TimetableEntry entry = new TimetableEntry(subjectName, professor, roomNumber, startTime, endTime, dayOfWeek, 0);
+        TimetableEntry entry = new TimetableEntry(subjectName, professor, roomNumber, startTime, endTime, dayOfWeek, dayOrder);
         if (entryId == -1) {
             timetableViewModel.insert(entry);
             Toast.makeText(requireContext(), "Entry added!", Toast.LENGTH_SHORT).show();

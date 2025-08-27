@@ -19,6 +19,7 @@ public interface TimetableDao {
     @Query("SELECT * FROM timetable_entries ORDER BY startTime ASC")
     LiveData<List<TimetableEntry>> getAllEntries();
 
+
     @Query("SELECT * FROM timetable_entries WHERE dayOfWeek = :day ORDER BY startTime ASC")
     LiveData<List<TimetableEntry>> getEntriesByDay(String day);
 
@@ -32,6 +33,10 @@ public interface TimetableDao {
     @Query("SELECT * FROM timetable_entries WHERE dayOfWeek = :day ORDER BY startTime ASC")
     List<TimetableEntry> getEntriesByDaySync(String day);
 
+    // NEW: Synchronous query for the widget to get entries by day order
+    @Query("SELECT * FROM timetable_entries WHERE dayOrder = :dayOrder ORDER BY startTime ASC")
+    List<TimetableEntry> getEntriesByDayOrderSync(int dayOrder);
+
     @Insert
     void insert(TimetableEntry entry);
 
@@ -41,4 +46,3 @@ public interface TimetableDao {
     @Delete
     void delete(TimetableEntry entry);
 }
-

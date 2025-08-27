@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Subject Name input field -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -32,6 +33,7 @@
                     android:inputType="textCapWords" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Professor's Name input field -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -45,6 +47,7 @@
                     android:inputType="textCapWords" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Room Number input field -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -58,6 +61,7 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Start Time selection -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -74,6 +78,7 @@
                 android:text="Select Time"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
+            <!-- End Time selection -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -90,20 +95,55 @@
                 android:text="Select Time"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
+            <!-- Radio Group to select between Day and Day Order -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Day"
+                android:text="Assignment Type"
+                android:textStyle="bold"
+                android:textSize="16sp" />
+
+            <RadioGroup
+                android:id="@+id/radio_group_day_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <RadioButton
+                    android:id="@+id/radio_button_day"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Day of Week"
+                    android:checked="true" />
+
+                <RadioButton
+                    android:id="@+id/radio_button_day_order"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Day Order" />
+            </RadioGroup>
+
+            <!-- Spinner for Day/Day Order selection -->
+            <TextView
+                android:id="@+id/text_view_day_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Day of Week"
                 android:textStyle="bold"
                 android:textSize="16sp" />
 
             <Spinner
-                android:id="@+id/spinner_day_of_week"
+                android:id="@+id/spinner_day_selection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp" />
 
+            <!-- Save and Delete buttons -->
             <Button
                 android:id="@+id/button_save"
                 android:layout_width="match_parent"

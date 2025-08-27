@@ -1,17 +1,12 @@
 package com.example.routinemanager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import androidx.fragment.app.FragmentTransaction;
-import com.example.routinemanager.TimetableRepository; // Replace with your package name
-import com.example.routinemanager.TimetableViewModel; // Replace with your package name
-import com.example.routinemanager.TimetableViewModelFactory; // Replace with your package name
-import com.example.routinemanager.TimetableAdapter; // Replace with your package name
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.List;
-import java.util.concurrent.Executors;
 
 /**
  * 7. Main Activity
@@ -40,5 +35,25 @@ public class MainActivity extends AppCompatActivity {
             transaction.addToBackStack(null);
             transaction.commit();
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.settings) {
+            // Open the SettingsFragment
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.timetable_fragment_container, new SettingsFragment());
+            transaction.addToBackStack(null);
+            transaction.commit();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

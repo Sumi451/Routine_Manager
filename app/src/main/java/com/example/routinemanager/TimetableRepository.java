@@ -38,9 +38,14 @@ public class TimetableRepository {
         return timetableDao.getEntryById(id);
     }
 
-    // Synchronous method for the widget
+    // Synchronous method for the widget to get entries by day of week
     public List<TimetableEntry> getEntriesByDaySync(String day) {
         return timetableDao.getEntriesByDaySync(day);
+    }
+
+    // NEW: Synchronous method for the widget to get entries by day order
+    public List<TimetableEntry> getEntriesByDayOrderSync(int dayOrder) {
+        return timetableDao.getEntriesByDayOrderSync(dayOrder);
     }
 
     public void insert(TimetableEntry entry) {
@@ -96,6 +101,4 @@ public class TimetableRepository {
             return null;
         }
     }
-
 }
-

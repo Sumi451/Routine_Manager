@@ -43,4 +43,3 @@ public class TimetableWidgetProvider extends AppWidgetProvider {
         }
     }
 }
-

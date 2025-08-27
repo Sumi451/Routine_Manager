@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -16,6 +17,8 @@ import java.util.Locale;
 import android.os.AsyncTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import android.util.Log;
 
 /**
  * 10. RemoteViewsService
@@ -24,7 +27,6 @@ import java.util.concurrent.ExecutionException;
 public class TimetableWidgetService extends RemoteViewsService {
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        // Create the factory and load the data on a background thread
         return new TimetableWidgetFactory(this.getApplicationContext());
     }
 }
@@ -38,6 +40,10 @@ class TimetableWidgetFactory implements RemoteViewsService.RemoteViewsFactory {
     private List<TimetableEntry> timetableEntries;
     private TimetableRepository repository;
 
+    private static final String PREFS_NAME = "RoutineManagerPrefs";
+    private static final String KEY_VIEW_TYPE = "view_type";
+    private static final String KEY_MAPPING_PREFIX = "day_order_mapping_";
+
     public TimetableWidgetFactory(Context context) {
         this.context = context;
         this.repository = new TimetableRepository(context);
@@ -45,7 +51,7 @@ class TimetableWidgetFactory implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public void onCreate() {
-        // Load data synchronously on a background thread
+        // Load data on a background thread. This is a synchronous operation.
         loadTimetableData();
     }
 
@@ -100,24 +106,48 @@ class TimetableWidgetFactory implements RemoteViewsService.RemoteViewsFactory {
     }
 
     private void loadTimetableData() {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String viewType = sharedPreferences.getString(KEY_VIEW_TYPE, "weekly");
+
         try {
             // Get the current day of the week
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat sdf = new SimpleDateFormat("EEEE", Locale.US);
-            String currentDay = sdf.format(calendar.getTime());
+            String currentDayOfWeek = sdf.format(calendar.getTime());
 
-            // Use AsyncTask to perform a synchronous query on a background thread
-            timetableEntries = new AsyncTask<String, Void, List<TimetableEntry>>() {
-                @Override
-                protected List<TimetableEntry> doInBackground(String... params) {
-                    return repository.getEntriesByDaySync(params[0]);
+            if (viewType.equals("weekly")) {
+                // Widget is in Weekly View mode, filter by day of week
+                timetableEntries = new AsyncTask<String, Void, List<TimetableEntry>>() {
+                    @Override
+                    protected List<TimetableEntry> doInBackground(String... params) {
+                        return repository.getEntriesByDaySync(params[0]);
+                    }
+                }.execute(currentDayOfWeek).get();
+            } else {
+                // Widget is in Day Order View mode, determine the current day order
+                String dayKey = currentDayOfWeek.toLowerCase(Locale.US);
+                int currentDayOrder = sharedPreferences.getInt(KEY_MAPPING_PREFIX + dayKey, 0);
+
+                if (currentDayOrder > 0) {
+                    // Use AsyncTask to perform a synchronous query for day order
+                    timetableEntries = new AsyncTask<Integer, Void, List<TimetableEntry>>() {
+                        @Override
+                        protected List<TimetableEntry> doInBackground(Integer... params) {
+                            return repository.getEntriesByDayOrderSync(params[0]);
+                        }
+                    }.execute(currentDayOrder).get();
+                } else {
+                    // No mapping found or invalid day order, display nothing
+                    timetableEntries = null;
                 }
-            }.execute(currentDay).get(); // get() will block until the result is available
+            }
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            Log.e("TimetableWidgetFactory", "ExecutionException while loading data", e);
             timetableEntries = null;
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            Log.e("TimetableWidgetFactory", "InterruptedException while loading data", e);
+            Thread.currentThread().interrupt();
+            timetableEntries = null;
         }
     }
 }
