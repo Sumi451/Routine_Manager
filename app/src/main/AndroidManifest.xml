@@ -29,6 +29,8 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <!-- NEW: Add the custom action for refreshing -->
+                <action android:name="com.example.routinemanager.ACTION_REFRESH_WIDGET" />
             </intent-filter>
             <!-- Meta-data to link to the widget's layout and settings -->
             <meta-data
