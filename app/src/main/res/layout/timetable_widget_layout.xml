@@ -26,14 +26,6 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- You can add an icon or button here for refreshing or opening the app -->
-        <ImageView
-            android:id="@+id/widget_open_app_button"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_launcher_foreground"
-            android:contentDescription="Open app" />
-
         <!-- NEW: Refresh button -->
         <ImageView
             android:id="@+id/widget_refresh_button"

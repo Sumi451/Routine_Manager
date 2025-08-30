@@ -81,6 +81,7 @@ class TimetableWidgetFactory implements RemoteViewsService.RemoteViewsFactory {
 
         views.setTextViewText(R.id.widget_subject_name, entry.subjectName);
         views.setTextViewText(R.id.widget_time, entry.startTime + " - " + entry.endTime);
+        views.setTextViewText(R.id.widget_room_number, "Room: " + entry.roomNumber);
 
         return views;
     }
@@ -110,13 +111,30 @@ class TimetableWidgetFactory implements RemoteViewsService.RemoteViewsFactory {
         String viewType = sharedPreferences.getString(KEY_VIEW_TYPE, "weekly");
 
         try {
-            // Get the current day of the week
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat sdf = new SimpleDateFormat("EEEE", Locale.US);
             String currentDayOfWeek = sdf.format(calendar.getTime());
 
+            // Update the widget header based on the current view type and day
+            String headerText;
+            if (viewType.equals("day_order")) {
+                String dayKey = currentDayOfWeek.toLowerCase(Locale.US);
+                int currentDayOrder = sharedPreferences.getInt(KEY_MAPPING_PREFIX + dayKey, 0);
+                if (currentDayOrder > 0) {
+                    headerText = "Day Order " + currentDayOrder;
+                } else {
+                    headerText = "No Day Order Set";
+                }
+            } else { // weekly view
+                headerText = currentDayOfWeek + "'s Timetable";
+            }
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            ComponentName componentName = new ComponentName(context, TimetableWidgetProvider.class);
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.timetable_widget_layout);
+            views.setTextViewText(R.id.widget_header, headerText);
+            appWidgetManager.updateAppWidget(componentName, views);
+
             if (viewType.equals("weekly")) {
-                // Widget is in Weekly View mode, filter by day of week
                 timetableEntries = new AsyncTask<String, Void, List<TimetableEntry>>() {
                     @Override
                     protected List<TimetableEntry> doInBackground(String... params) {
@@ -124,12 +142,10 @@ class TimetableWidgetFactory implements RemoteViewsService.RemoteViewsFactory {
                     }
                 }.execute(currentDayOfWeek).get();
             } else {
-                // Widget is in Day Order View mode, determine the current day order
                 String dayKey = currentDayOfWeek.toLowerCase(Locale.US);
                 int currentDayOrder = sharedPreferences.getInt(KEY_MAPPING_PREFIX + dayKey, 0);
 
                 if (currentDayOrder > 0) {
-                    // Use AsyncTask to perform a synchronous query for day order
                     timetableEntries = new AsyncTask<Integer, Void, List<TimetableEntry>>() {
                         @Override
                         protected List<TimetableEntry> doInBackground(Integer... params) {
@@ -137,7 +153,6 @@ class TimetableWidgetFactory implements RemoteViewsService.RemoteViewsFactory {
                         }
                     }.execute(currentDayOrder).get();
                 } else {
-                    // No mapping found or invalid day order, display nothing
                     timetableEntries = null;
                 }
             }
